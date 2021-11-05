@@ -1,0 +1,54 @@
+---
+version: '3.8'
+
+networks:
+  monitoring:
+    name: monitoring
+
+volumes:
+  influxdb2-data:
+    name: influxdb2-data
+  grafana-data:
+    name: grafana-data
+
+services:
+
+  collector:
+    container_name: collector
+    build:
+      context: ./collector
+      dockerfile: Dockerfile
+    depends_on:
+      - influxdb2  
+    networks:
+      monitoring:
+    restart: unless-stopped
+
+  influxdb2:
+    image: influxdb:2.0
+    container_name: influxdb2
+    ports:
+      - '8086:8086'
+    volumes:
+      - influxdb2-data:/var/lib/influxdb2
+    env_file:
+      - ./environment/influxdb2.env
+    networks:
+      monitoring:
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - '3000:3000'
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/bootstrap/:/etc/grafana/provisioning
+    depends_on:
+      - influxdb2
+    env_file:
+      - ./environment/grafana.env
+    networks:
+      monitoring:
+    restart: unless-stopped
