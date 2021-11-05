@@ -18,8 +18,10 @@ services:
     build:
       context: ./collector
       dockerfile: Dockerfile
+    env_file:
+      - ./environment/collector.env
     depends_on:
-      - influxdb2  
+      - influxdb2
     networks:
       monitoring:
     restart: unless-stopped
