@@ -2,7 +2,7 @@ import os
 import time
 import psutil
 import influxdb_client
-from influxdb_client.client.write_api import SYNCHRONOUS
+from influxdb_client.client.write_api import ASYNCHRONOUS
 
 # set timer
 starttime = time.time()
@@ -42,7 +42,7 @@ def collector():
   )
 
   # instantiate the write client
-  write_api = client.write_api(write_options=SYNCHRONOUS)
+  write_api = client.write_api(write_options=ASYNCHRONOUS)
   write_api.write(bucket=bucket, org=org, record=data)
 
   # print out loads
